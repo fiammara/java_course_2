@@ -1,11 +1,11 @@
 import java.math.BigDecimal;
 
 public class User {
-    private String name;
-    private String surname;
-    private String gender;
-    private long accountNumber;
-    private String mainCurrency;
+    private final String name;
+    private final String surname;
+    private final String gender;
+    private final long accountNumber;
+    private final String mainCurrency;
     private BigDecimal balance;
 
     public User(String name, String surname, String gender, long accountNumber, String mainCurrency, BigDecimal balance) {
@@ -37,6 +37,6 @@ public class User {
                 ", gender: '" + gender + '\'' +
                 ", accountNumber: " + accountNumber +
                 ", mainCurrency: " + mainCurrency + '\'' +
-                ", balance: " + balance ;
+                ", balance: " + balance;
     }
 }
