@@ -31,12 +31,13 @@ public class Main {
     }
 
     private static void printAMenu() {
-        System.out.println("Bank menu: ");
-        System.out.println("1 - to register as a new user ");
-        System.out.println("2 - to see your balance ");
-        System.out.println("3 - to withdraw money");
-        System.out.println("4 - to deposit money");
-        System.out.println("x - to end a program ");
+        System.out.println("""
+        Bank menu: 
+        1 - to register as a new user 
+        2 - to see your balance 
+        3 - to withdraw money
+        4 - to deposit money
+        x - to end a program """);
     }
     private static void registerNewUser() {
         System.out.println("please enter your name");
