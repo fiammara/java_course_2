@@ -3,9 +3,9 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class Main {
-    private static Scanner scanner = new Scanner(System.in);
+    private static final Scanner scanner = new Scanner(System.in);
     private static User user = new User("n1", "s1", "female", 12345566L, "EUR", new BigDecimal("1000.50"));
-    private static Bank bank = new Bank();
+    private static final Bank bank = new Bank();
 
     public static void main(String[] args) {
 
@@ -32,12 +32,12 @@ public class Main {
 
     private static void printAMenu() {
         System.out.println("""
-        Bank menu: 
-        1 - to register as a new user 
-        2 - to see your balance 
+        Bank menu:\s
+        1 - to register as a new user\s
+        2 - to see your balance\s
         3 - to withdraw money
         4 - to deposit money
-        x - to end a program """);
+        x - to end a program\s""");
     }
     private static void registerNewUser() {
         System.out.println("please enter your name");
@@ -91,7 +91,6 @@ public class Main {
                 System.out.println("Please enter amount you want to withdraw (positive number): ");
                 while (!scanner.hasNextBigDecimal()) {
                     System.out.println("Please enter a positive number!");
-                    System.out.println("That's not a number!");
                     scanner.next();
                 }
                 number = scanner.nextBigDecimal();
@@ -109,7 +108,6 @@ public class Main {
                 System.out.println("Please enter amount you want to deposit (positive number): ");
                 while (!scanner.hasNextBigDecimal()) {
                     System.out.println("Please enter a positive number!");
-                    System.out.println("That's not a number!");
                     scanner.next();
                 }
                 number = scanner.nextBigDecimal();
