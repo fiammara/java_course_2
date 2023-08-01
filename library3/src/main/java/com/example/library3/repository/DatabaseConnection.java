@@ -9,15 +9,16 @@ public class DatabaseConnection {
     String username = "root";
     String password = "root";
     Connection conn;
-  Connection getConnection(){
 
-       {
-           try {
-               conn = DriverManager.getConnection(dbURL, username, password);
-           } catch (SQLException e) {
-               throw new RuntimeException(e);
-           }
-       }
-      return conn;
-  }
+    Connection getConnection() {
+
+        {
+            try {
+                conn = DriverManager.getConnection(dbURL, username, password);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return conn;
+    }
 }

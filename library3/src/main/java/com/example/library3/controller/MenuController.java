@@ -5,6 +5,7 @@ import com.example.library3.model.Book;
 import com.example.library3.model.User;
 import com.example.library3.service.BookService;
 import com.example.library3.service.UserService;
+
 import javax.swing.*;
 import java.sql.SQLException;
 import java.util.List;
@@ -26,18 +27,17 @@ public class MenuController {
 
     public void removeBookFromTheLibrary() {
 
-            try{
-                Long bookId = Long.valueOf(this.getInfo("Please enter and id of the book to remove: "));
-                String result = bookService.removeBookById(bookId);
-                displayMessage(result);
-            }catch(Exception exception) {
-                displayMessage("Error: " + exception.getMessage());
-                this.displayMessage(exception.getMessage());
-            }
-            finally {
-                if (this.getInfo("Do you want to try again? (yes / no):").equals("yes")) this.removeBookFromTheLibrary();
-            }
+        try {
+            Long bookId = Long.valueOf(this.getInfo("Please enter and id of the book to remove: "));
+            String result = bookService.removeBookById(bookId);
+            displayMessage(result);
+        } catch (Exception exception) {
+            displayMessage("Error: " + exception.getMessage());
+            this.displayMessage(exception.getMessage());
+        } finally {
+            if (this.getInfo("Do you want to try again? (yes / no):").equals("yes")) this.removeBookFromTheLibrary();
         }
+    }
 
 
     public void addBookToTheLibrary() {
@@ -46,7 +46,7 @@ public class MenuController {
             Book book = this.collectBookInfo();
             String result = bookService.addBookToTheLibrary(book);
             displayMessage(result);
-        } catch (Exception exception){
+        } catch (Exception exception) {
             displayMessage("Error: " + exception.getMessage());
         } finally {
             if (this.getInfo("Do you want to add another book? (yes / no):").equals("yes")) this.addBookToTheLibrary();
@@ -54,14 +54,15 @@ public class MenuController {
     }
 
     private Book collectBookInfo() {
-       Book book = new Book();
-       book.setAuthorName(getInfo("Please enter book author: "));
-       book.setTitle(getInfo("Please enter book title: "));
-       book.setCopies(Integer.parseInt(this.getInfo("Please enter book quantity: ")));
-       book.setCopiesAvailable(book.getCopies());
+        Book book = new Book();
+        book.setAuthorName(getInfo("Please enter book author: "));
+        book.setTitle(getInfo("Please enter book title: "));
+        book.setCopies(Integer.parseInt(this.getInfo("Please enter book quantity: ")));
+        book.setCopiesAvailable(book.getCopies());
 
         return book;
     }
+
     private Book collectBookInfo1() {
         Book book = new Book();
         book.setAuthorName(getInfo("Please enter book author: "));
@@ -70,11 +71,12 @@ public class MenuController {
         return book;
     }
 
-    public String getInfo(String message){
+    public String getInfo(String message) {
         System.out.println(message);
         return scanner.nextLine();
     }
-    public void displayMessage(String message){
+
+    public void displayMessage(String message) {
         System.out.println(message);
     }
 
@@ -84,9 +86,10 @@ public class MenuController {
             User user = this.collectNewUserInfo();
             String result = userService.registerUser(user);
             displayMessage(result);
-        } catch (Exception exception){
+        } catch (Exception exception) {
             displayMessage("Error: " + exception.getMessage());
-            if (this.getInfo("Do you want to try register again? (yes / no):").equals("yes")) this.registerNewUser();        }
+            if (this.getInfo("Do you want to try register again? (yes / no):").equals("yes")) this.registerNewUser();
+        }
     }
 
     private User collectNewUserInfo() {
@@ -97,6 +100,7 @@ public class MenuController {
 
         return user;
     }
+
     private User collectLoginInfo() {
         User user = new User();
         String userName = getInfo("Please enter your name: ");
@@ -105,6 +109,7 @@ public class MenuController {
         user.setPassword(password);
         return user;
     }
+
     public void loginUser() {
 
         try {
@@ -112,26 +117,25 @@ public class MenuController {
             String result = userService.loginUser(user);
 
             displayMessage(result);
-        } catch (Exception exception){
+        } catch (Exception exception) {
             displayMessage("Error: " + exception.getMessage());
             if (this.getInfo("Do you want to login as another user? (yes / no):").equals("yes")) this.loginUser();
         }
     }
 
-    public void borrowABook()  {
+    public void borrowABook() {
 
         User user = Library3Application.getCurrent();
         try {
-            if (userService.checkUserBooks(user.getId())>4) {
+            if (userService.checkUserBooks(user.getId()) > 4) {
                 System.out.println("You already have more than 4 books");
-            }
-            else {
+            } else {
                 System.out.println("You can borrow a book! Please write a book author or title: ");
                 try {
                     Book book = this.collectBookInfo1();
                     String result = bookService.borrowBook(book);
                     displayMessage(result);
-                } catch (Exception exception){
+                } catch (Exception exception) {
                     displayMessage("Error: " + exception.getMessage());
                 } finally {
                     if (this.getInfo("Do you want to try again? (yes / no):").equals("yes")) this.borrowABook();
@@ -145,27 +149,28 @@ public class MenuController {
 
     public void returnABook() {
 
-        try{
+        try {
             Long bookId = Long.valueOf(this.getInfo("Please enter book id to return: "));
             String result = bookService.returnBookById(bookId);
             displayMessage(result);
 
-        }catch(Exception exception) {
+        } catch (Exception exception) {
             this.displayMessage(exception.getMessage());
         }
     }
 
     public void findABookByAuthorAndTitle() {
 
-                try {
-                    Book book = this.collectBookInfo1();
-                    String result = bookService.findBookByAuthorAndTitle(book);
-                    displayMessage(result);
-                } catch (Exception exception){
-                    displayMessage("Error: " + exception.getMessage());
-                } finally {
-                    if (this.getInfo("Do you want to search for another book? (yes / no):").equals("yes")) this.findABookByAuthorAndTitle();
-                }
+        try {
+            Book book = this.collectBookInfo1();
+            String result = bookService.findBookByAuthorAndTitle(book);
+            displayMessage(result);
+        } catch (Exception exception) {
+            displayMessage("Error: " + exception.getMessage());
+        } finally {
+            if (this.getInfo("Do you want to search for another book? (yes / no):").equals("yes"))
+                this.findABookByAuthorAndTitle();
+        }
 
     }
 
@@ -207,11 +212,10 @@ public class MenuController {
             sb.append("</tr></table></html>");
             output = sb.toString();
             JFrame myFrame = new JFrame();
-            myFrame.setVisible (true);
+            myFrame.setVisible(true);
             JOptionPane.showMessageDialog(myFrame, output);
 
-        }
-    catch (SQLException e) {
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
 
@@ -221,53 +225,53 @@ public class MenuController {
         try {
             String author = this.getInfo("Please enter the author:");
 
-                try {
+            try {
 
-                    List<Book> books = bookService.findBookByAuthor(author);
+                List<Book> books = bookService.findBookByAuthor(author);
 
-                    String output;
-                    StringBuilder sb = new StringBuilder();
-                    sb.append("<html><table cellspacing=10>");
+                String output;
+                StringBuilder sb = new StringBuilder();
+                sb.append("<html><table cellspacing=10>");
+                sb.append("<tr>");
+                sb.append("<td>").append("BOOK ID").append("</td>");
+                sb.append("<td>").append("AUTHOR").append("</td>");
+                sb.append("<td>").append("TITLE").append("</td>");
+                sb.append("<td>").append("COPIES").append("</td>");
+                sb.append("<td>").append("COPIES AVAILABLE").append("</td>");
+                sb.append("</tr>");
+
+                sb.append("<tr>");
+                sb.append("<td>").append("___").append("</td>");
+                sb.append("<td>").append("___").append("</td>");
+                sb.append("<td>").append("___").append("</td>");
+                sb.append("<td>").append("___").append("</td>");
+                sb.append("<td>").append("___").append("</td>");
+                sb.append("</tr>");
+                for (Book book : books) {
                     sb.append("<tr>");
-                    sb.append("<td>").append("BOOK ID").append("</td>");
-                    sb.append("<td>").append("AUTHOR").append("</td>");
-                    sb.append("<td>").append("TITLE").append("</td>");
-                    sb.append("<td>").append("COPIES").append("</td>");
-                    sb.append("<td>").append("COPIES AVAILABLE").append("</td>");
-                    sb.append("</tr>");
 
-                    sb.append("<tr>");
-                    sb.append("<td>").append("___").append("</td>");
-                    sb.append("<td>").append("___").append("</td>");
-                    sb.append("<td>").append("___").append("</td>");
-                    sb.append("<td>").append("___").append("</td>");
-                    sb.append("<td>").append("___").append("</td>");
-                    sb.append("</tr>");
-                    for (Book book : books) {
-                        sb.append("<tr>");
-
-                        sb.append("<td>").append(book.getBook_id()).append("</td>");
-                        sb.append("<td>").append(book.getAuthorName()).append("</td>");
-                        sb.append("<td>").append(book.getTitle()).append("</td>");
-                        sb.append("<td>").append(book.getCopies()).append("</td>");
-                        sb.append("<td>").append(book.getCopiesAvailable()).append("</td>");
-
-                    }
-                    sb.append("</tr></table></html>");
-                    output = sb.toString();
-                    JFrame myFrame = new JFrame();
-                    myFrame.setVisible (true);
-                    JOptionPane.showMessageDialog(myFrame, output);
+                    sb.append("<td>").append(book.getBook_id()).append("</td>");
+                    sb.append("<td>").append(book.getAuthorName()).append("</td>");
+                    sb.append("<td>").append(book.getTitle()).append("</td>");
+                    sb.append("<td>").append(book.getCopies()).append("</td>");
+                    sb.append("<td>").append(book.getCopiesAvailable()).append("</td>");
 
                 }
-                catch (SQLException e) {
-                    throw new RuntimeException(e);
-                }
+                sb.append("</tr></table></html>");
+                output = sb.toString();
+                JFrame myFrame = new JFrame();
+                myFrame.setVisible(true);
+                JOptionPane.showMessageDialog(myFrame, output);
 
-        } catch (Exception exception){
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+
+        } catch (Exception exception) {
             displayMessage("Error: " + exception.getMessage());
         } finally {
-            if (this.getInfo("Do you want to search for another book? (yes / no):").equals("yes")) this.findBooksByAuthor();
+            if (this.getInfo("Do you want to search for another book? (yes / no):").equals("yes"))
+                this.findBooksByAuthor();
         }
     }
 
@@ -311,102 +315,102 @@ public class MenuController {
                 sb.append("</tr></table></html>");
                 output = sb.toString();
                 JFrame myFrame = new JFrame();
-                myFrame.setVisible (true);
+                myFrame.setVisible(true);
                 JOptionPane.showMessageDialog(myFrame, output);
 
-            }
-            catch (SQLException e) {
+            } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
 
-        } catch (Exception exception){
+        } catch (Exception exception) {
             displayMessage("Error: " + exception.getMessage());
         } finally {
-            if (this.getInfo("Do you want to search for another book? (yes / no):").equals("yes")) this.findBooksByTitle();
+            if (this.getInfo("Do you want to search for another book? (yes / no):").equals("yes"))
+                this.findBooksByTitle();
         }
     }
 
 
     public void findAllUsersBorrowedBooks() {
 
-            try {
+        try {
 
-                Map<User, Set<Book>> booksBorrowed = bookService.getBorrowingStats();
+            Map<User, Set<Book>> booksBorrowed = bookService.getBorrowingStats();
 
-                String output;
-                StringBuilder sb = new StringBuilder();
-                sb.append("<html><table cellspacing=10>");
+            String output;
+            StringBuilder sb = new StringBuilder();
+            sb.append("<html><table cellspacing=10>");
+            sb.append("<tr>");
+            sb.append("<td>").append("USER:").append("</td>");
+            sb.append("<td>").append("HOW MANY BOOKS:").append("</td>");
+            sb.append("<td>").append("BOOKS BORROWED:").append("</td>");
+
+            sb.append("</tr>");
+
+            sb.append("<tr>");
+            sb.append("<td>").append("___").append("</td>");
+            sb.append("<td>").append("___").append("</td>");
+            sb.append("<td>").append("___").append("</td>");
+            sb.append("</tr>");
+
+            for (var entry : booksBorrowed.entrySet()) {
                 sb.append("<tr>");
-                sb.append("<td>").append("USER:").append("</td>");
-                sb.append("<td>").append("HOW MANY BOOKS:").append("</td>");
-                sb.append("<td>").append("BOOKS BORROWED:").append("</td>");
-
-                sb.append("</tr>");
-
-                sb.append("<tr>");
-                sb.append("<td>").append("___").append("</td>");
-                sb.append("<td>").append("___").append("</td>");
-                sb.append("<td>").append("___").append("</td>");
-                sb.append("</tr>");
-
-                for (var entry : booksBorrowed.entrySet()) {
-                    sb.append("<tr>");
-                    sb.append("<td>").append(entry.getKey().getUserName()).append("</td>");
-                    sb.append("<td>").append(entry.getValue().size()).append("</td>");
-                    for (Book b: entry.getValue()) {
+                sb.append("<td>").append(entry.getKey().getUserName()).append("</td>");
+                sb.append("<td>").append(entry.getValue().size()).append("</td>");
+                for (Book b : entry.getValue()) {
                     sb.append("<td>").append(b).append("</td>");
-                    }
                 }
-
-                sb.append("</tr></table></html>");
-                output = sb.toString();
-                JFrame myFrame = new JFrame();
-                myFrame.setVisible (true);
-                JOptionPane.showMessageDialog(myFrame, output);
-
-    } catch (SQLException e) {
-                throw new RuntimeException(e);
             }
+
+            sb.append("</tr></table></html>");
+            output = sb.toString();
+            JFrame myFrame = new JFrame();
+            myFrame.setVisible(true);
+            JOptionPane.showMessageDialog(myFrame, output);
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void logout() {
         Library3Application.setUser(null);
     }
 
-    public void seeMyBorrowedBooks()  {
+    public void seeMyBorrowedBooks() {
         try {
             Set<Book> books = bookService.findBooksByUser(Library3Application.getCurrent().getId());
             if (!books.isEmpty()) {
-            String output;
-            StringBuilder sb = new StringBuilder();
-            sb.append("<html><table cellspacing=10>");
-            sb.append("<tr>");
-            sb.append("<td>").append("BOOK ID:").append("</td>");
-            sb.append("<td>").append("AUTHOR:").append("</td>");
-            sb.append("<td>").append("TITLE:").append("</td>");
-
-            sb.append("</tr>");
-
-            sb.append("<tr>");
-            sb.append("<td>").append("___").append("</td>");
-            sb.append("<td>").append("___").append("</td>");
-            sb.append("<td>").append("___").append("</td>");
-            sb.append("</tr>");
-
-            for (Book entry : books) {
+                String output;
+                StringBuilder sb = new StringBuilder();
+                sb.append("<html><table cellspacing=10>");
                 sb.append("<tr>");
-                sb.append("<td>").append(entry.getBook_id()).append("</td>");
-                sb.append("<td>").append(entry.getAuthorName()).append("</td>");
-                sb.append("<td>").append(entry.getTitle()).append("</td>");
+                sb.append("<td>").append("BOOK ID:").append("</td>");
+                sb.append("<td>").append("AUTHOR:").append("</td>");
+                sb.append("<td>").append("TITLE:").append("</td>");
 
-            }
+                sb.append("</tr>");
 
-            sb.append("</tr></table></html>");
-            output = sb.toString();
-            JFrame myFrame = new JFrame();
-            myFrame.setVisible (true);
-            JOptionPane.showMessageDialog(myFrame, output); }
-            else {
+                sb.append("<tr>");
+                sb.append("<td>").append("___").append("</td>");
+                sb.append("<td>").append("___").append("</td>");
+                sb.append("<td>").append("___").append("</td>");
+                sb.append("</tr>");
+
+                for (Book entry : books) {
+                    sb.append("<tr>");
+                    sb.append("<td>").append(entry.getBook_id()).append("</td>");
+                    sb.append("<td>").append(entry.getAuthorName()).append("</td>");
+                    sb.append("<td>").append(entry.getTitle()).append("</td>");
+
+                }
+
+                sb.append("</tr></table></html>");
+                output = sb.toString();
+                JFrame myFrame = new JFrame();
+                myFrame.setVisible(true);
+                JOptionPane.showMessageDialog(myFrame, output);
+            } else {
                 System.out.println("You don`t have books borrowed.");
             }
         } catch (SQLException e) {
