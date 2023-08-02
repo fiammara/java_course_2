@@ -23,7 +23,6 @@ public class BookService {
             bookRepository.save(book1);
             message = "Book added successfully";
         } catch (SQLException e) {
-
             throw new RuntimeException(e);
         }
         return message;
@@ -68,7 +67,7 @@ public class BookService {
             Long bookIdCheck = bookRepository.findBookByAuthorAndTitle(book);
             if (bookAvailabilityChecker(book)) {
                 bookRepository.addBookToUser(bookIdCheck);
-                bookRepository.saveBookForBorrow(bookIdCheck);
+                bookRepository.updateBookCopies(bookIdCheck, -1);
                 message = "Book borrowed successfully.";
             }
 
@@ -95,7 +94,6 @@ public class BookService {
                }
            }
            else {
-
                System.out.println( "Book was not found by author or title.");
                result = false;
            }
@@ -107,7 +105,7 @@ public class BookService {
         String message;
         try {
             boolean result1 = bookRepository.removeUsersBookById(bookId);
-            boolean result2 = bookRepository.saveBookForReturn(bookId);
+            boolean result2 = bookRepository.updateBookCopies(bookId, 1);
             if (result1 && result2) {
               message = "Book returned successfully.";
             }
@@ -123,7 +121,6 @@ public class BookService {
 
     public List<Book> findAllBooks() throws SQLException {
         return bookRepository.findAllBooks();
-
     }
 
     public List<Book> findBookByAuthor(String author) throws SQLException {

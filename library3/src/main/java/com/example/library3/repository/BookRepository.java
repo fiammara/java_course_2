@@ -125,46 +125,26 @@ public class BookRepository {
 
         ResultSet rs = preparedStatement.executeQuery();
         if (rs.next()) {
-
-            Book book1 = new Book();
-            book1.setBook_id(id);
-            book1.setAuthorName((String) rs.getObject(2));
-            book1.setTitle((String) rs.getObject(3));
-            book1.setCopies((Integer) rs.getObject(4));
-            book1.setCopiesAvailable((Integer) rs.getObject(5));
-            book = book1;
-
+            book = ExtractBookFromResultSet(rs);
         }
         return book;
     }
 
-    public boolean saveBookForReturn(Long bookById) {
+    public boolean updateBookCopies(Long bookById, int quantity) throws SQLException {
         boolean result = false;
         try (PreparedStatement preparedStatement = conn.prepareStatement(
                 "update books set copiesAvailable= ? where book_id = ?")
         ) {
-            preparedStatement.setInt(1, (findBookById(bookById).getCopiesAvailable()) + 1);
+            preparedStatement.setInt(1, (findBookById(bookById).getCopiesAvailable()) + quantity);
             preparedStatement.setLong(2, bookById);
             if (preparedStatement.executeUpdate() > 0) {
                 result = true;
             }
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
         return result;
-    }
-
-    public void saveBookForBorrow(Long bookById) throws SQLException {
-
-        try (PreparedStatement preparedStatement = conn.prepareStatement(
-                "update books set copiesAvailable= ? where book_id = ?")
-        ) {
-            preparedStatement.setInt(1, (findBookById(bookById).getCopiesAvailable()) - 1);
-            preparedStatement.setLong(2, bookById);
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public List<Book> findAllBooks() throws SQLException {
@@ -172,47 +152,43 @@ public class BookRepository {
         String query = "select * from books";
         PreparedStatement preparedStatement = conn.prepareStatement(query);
         ResultSet rs = preparedStatement.executeQuery();
-        if (!rs.next()) {
-            System.out.println("The library is empty!");
-        } else {
-            ExtractBookFromResultSet(books, rs);
+        if (rs.next()) {
+            books.add(ExtractBookFromResultSet(rs));
             while (rs.next()) {
-                ExtractBookFromResultSet(books, rs);
+                books.add(ExtractBookFromResultSet(rs));
             }
         }
         return books;
     }
 
-    private void ExtractBookFromResultSet(List<Book> books, ResultSet rs) throws SQLException {
+    private Book ExtractBookFromResultSet(ResultSet rs) throws SQLException {
         Book book = new Book();
         book.setBook_id(rs.getLong(1));
         book.setAuthorName(rs.getString(2));
         book.setTitle(rs.getString(3));
         book.setCopies(rs.getInt(4));
         book.setCopiesAvailable(rs.getInt(5));
-        books.add(book);
+
+        return book;
     }
 
     public List<Book> findBookByAuthor(String author) throws SQLException {
         List<Book> books = new ArrayList<>();
         String query = "select * from books where authorName = ?";
-
         return getBooks(author, books, query);
     }
 
     private List<Book> getBooks(String author, List<Book> books, String query) throws SQLException {
+
         PreparedStatement preparedStatement = conn.prepareStatement(query);
         preparedStatement.setString(1, author);
 
         ResultSet rs = preparedStatement.executeQuery();
-        if (!rs.next()) {
-            System.out.println("Books not found. Please try again!");
-        } else {
-            ExtractBookFromResultSet(books, rs);
+        if (rs.next()) {
+            books.add(ExtractBookFromResultSet(rs));
             while (rs.next()) {
-                ExtractBookFromResultSet(books, rs);
+                books.add(ExtractBookFromResultSet(rs));
             }
-
         }
         return books;
     }
