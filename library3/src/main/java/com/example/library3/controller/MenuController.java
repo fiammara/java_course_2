@@ -115,7 +115,6 @@ public class MenuController {
         try {
             User user = this.collectLoginInfo();
             String result = userService.loginUser(user);
-
             displayMessage(result);
         } catch (Exception exception) {
             displayMessage("Error: " + exception.getMessage());
@@ -180,45 +179,50 @@ public class MenuController {
 
             List<Book> books = bookService.findAllBooks();
 
-            String output;
-            StringBuilder sb = new StringBuilder();
-            sb.append("<html><table cellspacing=10>");
-            sb.append("<tr>");
-            sb.append("<td>").append("BOOK ID").append("</td>");
-            sb.append("<td>").append("AUTHOR").append("</td>");
-            sb.append("<td>").append("TITLE").append("</td>");
-            sb.append("<td>").append("COPIES").append("</td>");
-            sb.append("<td>").append("COPIES AVAILABLE").append("</td>");
-            sb.append("</tr>");
-
-
-            sb.append("<tr>");
-            sb.append("<td>").append("___").append("</td>");
-            sb.append("<td>").append("___").append("</td>");
-            sb.append("<td>").append("___").append("</td>");
-            sb.append("<td>").append("___").append("</td>");
-            sb.append("<td>").append("___").append("</td>");
-            sb.append("</tr>");
-            for (Book book : books) {
-                sb.append("<tr>");
-
-                sb.append("<td>").append(book.getBook_id()).append("</td>");
-                sb.append("<td>").append(book.getAuthorName()).append("</td>");
-                sb.append("<td>").append(book.getTitle()).append("</td>");
-                sb.append("<td>").append(book.getCopies()).append("</td>");
-                sb.append("<td>").append(book.getCopiesAvailable()).append("</td>");
-
-            }
-            sb.append("</tr></table></html>");
-            output = sb.toString();
-            JFrame myFrame = new JFrame();
-            myFrame.setVisible(true);
-            JOptionPane.showMessageDialog(myFrame, output);
+            createTableOfBooks(books);
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
 
+    }
+
+    private void createTableOfBooks(List<Book> books) {
+        String output;
+        StringBuilder sb = new StringBuilder();
+        sb.append("<html><table cellspacing=10>");
+        sb.append("<tr>");
+        sb.append("<td>").append("BOOK ID").append("</td>");
+        sb.append("<td>").append("AUTHOR").append("</td>");
+        sb.append("<td>").append("TITLE").append("</td>");
+        sb.append("<td>").append("COPIES").append("</td>");
+        sb.append("<td>").append("COPIES AVAILABLE").append("</td>");
+        sb.append("</tr>");
+
+
+        sb.append("<tr>");
+        sb.append("<td>").append("___").append("</td>");
+        sb.append("<td>").append("___").append("</td>");
+        sb.append("<td>").append("___").append("</td>");
+        sb.append("<td>").append("___").append("</td>");
+        sb.append("<td>").append("___").append("</td>");
+        sb.append("</tr>");
+
+        for (Book book : books) {
+            sb.append("<tr>");
+
+            sb.append("<td>").append(book.getBook_id()).append("</td>");
+            sb.append("<td>").append(book.getAuthorName()).append("</td>");
+            sb.append("<td>").append(book.getTitle()).append("</td>");
+            sb.append("<td>").append(book.getCopies()).append("</td>");
+            sb.append("<td>").append(book.getCopiesAvailable()).append("</td>");
+
+        }
+        sb.append("</tr></table></html>");
+        output = sb.toString();
+        JFrame myFrame = new JFrame();
+        myFrame.setAlwaysOnTop(true);
+        JOptionPane.showMessageDialog(myFrame, output);
     }
 
     public void findBooksByAuthor() {
@@ -229,39 +233,7 @@ public class MenuController {
 
                 List<Book> books = bookService.findBookByAuthor(author);
 
-                String output;
-                StringBuilder sb = new StringBuilder();
-                sb.append("<html><table cellspacing=10>");
-                sb.append("<tr>");
-                sb.append("<td>").append("BOOK ID").append("</td>");
-                sb.append("<td>").append("AUTHOR").append("</td>");
-                sb.append("<td>").append("TITLE").append("</td>");
-                sb.append("<td>").append("COPIES").append("</td>");
-                sb.append("<td>").append("COPIES AVAILABLE").append("</td>");
-                sb.append("</tr>");
-
-                sb.append("<tr>");
-                sb.append("<td>").append("___").append("</td>");
-                sb.append("<td>").append("___").append("</td>");
-                sb.append("<td>").append("___").append("</td>");
-                sb.append("<td>").append("___").append("</td>");
-                sb.append("<td>").append("___").append("</td>");
-                sb.append("</tr>");
-                for (Book book : books) {
-                    sb.append("<tr>");
-
-                    sb.append("<td>").append(book.getBook_id()).append("</td>");
-                    sb.append("<td>").append(book.getAuthorName()).append("</td>");
-                    sb.append("<td>").append(book.getTitle()).append("</td>");
-                    sb.append("<td>").append(book.getCopies()).append("</td>");
-                    sb.append("<td>").append(book.getCopiesAvailable()).append("</td>");
-
-                }
-                sb.append("</tr></table></html>");
-                output = sb.toString();
-                JFrame myFrame = new JFrame();
-                myFrame.setVisible(true);
-                JOptionPane.showMessageDialog(myFrame, output);
+                createTableOfBooks(books);
 
             } catch (SQLException e) {
                 throw new RuntimeException(e);
@@ -283,40 +255,7 @@ public class MenuController {
 
                 List<Book> books = bookService.findBookByTitle(title);
 
-                String output;
-                StringBuilder sb = new StringBuilder();
-                sb.append("<html><table cellspacing=10>");
-                sb.append("<tr>");
-                sb.append("<td>").append("BOOK ID").append("</td>");
-                sb.append("<td>").append("AUTHOR").append("</td>");
-                sb.append("<td>").append("TITLE").append("</td>");
-                sb.append("<td>").append("COPIES").append("</td>");
-                sb.append("<td>").append("COPIES AVAILABLE").append("</td>");
-                sb.append("</tr>");
-
-
-                sb.append("<tr>");
-                sb.append("<td>").append("___").append("</td>");
-                sb.append("<td>").append("___").append("</td>");
-                sb.append("<td>").append("___").append("</td>");
-                sb.append("<td>").append("___").append("</td>");
-                sb.append("<td>").append("___").append("</td>");
-                sb.append("</tr>");
-                for (Book book : books) {
-                    sb.append("<tr>");
-
-                    sb.append("<td>").append(book.getBook_id()).append("</td>");
-                    sb.append("<td>").append(book.getAuthorName()).append("</td>");
-                    sb.append("<td>").append(book.getTitle()).append("</td>");
-                    sb.append("<td>").append(book.getCopies()).append("</td>");
-                    sb.append("<td>").append(book.getCopiesAvailable()).append("</td>");
-
-                }
-                sb.append("</tr></table></html>");
-                output = sb.toString();
-                JFrame myFrame = new JFrame();
-                myFrame.setVisible(true);
-                JOptionPane.showMessageDialog(myFrame, output);
+                createTableOfBooks(books);
 
             } catch (SQLException e) {
                 throw new RuntimeException(e);
@@ -359,13 +298,14 @@ public class MenuController {
                 sb.append("<td>").append(entry.getValue().size()).append("</td>");
                 for (Book b : entry.getValue()) {
                     sb.append("<td>").append(b).append("</td>");
+
                 }
             }
 
             sb.append("</tr></table></html>");
             output = sb.toString();
             JFrame myFrame = new JFrame();
-            myFrame.setVisible(true);
+            myFrame.setAlwaysOnTop(true);
             JOptionPane.showMessageDialog(myFrame, output);
 
         } catch (SQLException e) {
@@ -408,7 +348,7 @@ public class MenuController {
                 sb.append("</tr></table></html>");
                 output = sb.toString();
                 JFrame myFrame = new JFrame();
-                myFrame.setVisible(true);
+                myFrame.setAlwaysOnTop(true);
                 JOptionPane.showMessageDialog(myFrame, output);
             } else {
                 System.out.println("You don`t have books borrowed.");

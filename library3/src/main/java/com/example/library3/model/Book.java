@@ -1,13 +1,9 @@
 package com.example.library3.model;
 
-import javax.persistence.*;
 
 
-@Entity
-@Table(name = "books")
 public class Book {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private Long book_id;
     private String authorName;
     private String title;
