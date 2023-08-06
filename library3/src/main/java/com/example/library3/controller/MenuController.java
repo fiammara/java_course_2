@@ -5,6 +5,7 @@ import com.example.library3.model.Book;
 import com.example.library3.model.User;
 import com.example.library3.service.BookService;
 import com.example.library3.service.UserService;
+import exceptions.ContactCreationCancelledException;
 
 import javax.swing.*;
 import java.sql.SQLException;
@@ -38,7 +39,6 @@ public class MenuController {
             if (this.getInfo("Do you want to try again? (yes / no):").equals("yes")) this.removeBookFromTheLibrary();
         }
     }
-
 
     public void addBookToTheLibrary() {
 
@@ -92,12 +92,25 @@ public class MenuController {
         }
     }
 
-    private User collectNewUserInfo() {
+    private User collectNewUserInfo() throws ContactCreationCancelledException {
         User user = new User();
         user.setUserName(getInfo("Please enter your name: "));
         user.setPassword((getInfo("Please enter your password: ")));
         user.setEmail(getInfo("Please enter your email: "));
 
+        if (user.getUserName() == null ||
+                user.getPassword() == null ||
+                user.getEmail() == null ||
+                user.getUserName().isBlank() ||
+                user.getPassword().isBlank() ||
+                user.getEmail().isBlank()
+        ) {
+            String userAnswer = getInfo("User details could not be blank/empty. Do you want to try register again? (yes / no): ");
+            if (userAnswer.equals("yes")) {
+                return this.collectNewUserInfo();
+            }
+            throw new ContactCreationCancelledException("Contact creation failed");
+        }
         return user;
     }
 
@@ -124,22 +137,21 @@ public class MenuController {
 
     public void borrowABook() {
 
-        User user = Library3Application.getCurrent();
+        User user = Library3Application.getCurrentUser();
         try {
             if (userService.checkUserBooks(user.getId()) > 4) {
                 System.out.println("You already have more than 4 books");
             } else {
                 System.out.println("You can borrow a book! Please write a book author or title: ");
                 try {
-                    Book book = this.collectBookInfo1();
-                    String result = bookService.borrowBook(book);
+                    Book bookDetails = this.collectBookInfo1();
+                    String result = bookService.borrowBook(bookDetails);
                     displayMessage(result);
                 } catch (Exception exception) {
                     displayMessage("Error: " + exception.getMessage());
                 } finally {
                     if (this.getInfo("Do you want to try again? (yes / no):").equals("yes")) this.borrowABook();
                 }
-
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -176,15 +188,12 @@ public class MenuController {
     public void seeAllBooksInThisLibrary() {
 
         try {
-
             List<Book> books = bookService.findAllBooks();
-
             createTableOfBooks(books);
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     private void createTableOfBooks(List<Book> books) {
@@ -200,13 +209,6 @@ public class MenuController {
         sb.append("</tr>");
 
 
-        sb.append("<tr>");
-        sb.append("<td>").append("___").append("</td>");
-        sb.append("<td>").append("___").append("</td>");
-        sb.append("<td>").append("___").append("</td>");
-        sb.append("<td>").append("___").append("</td>");
-        sb.append("<td>").append("___").append("</td>");
-        sb.append("</tr>");
 
         for (Book book : books) {
             sb.append("<tr>");
@@ -230,9 +232,7 @@ public class MenuController {
             String author = this.getInfo("Please enter the author:");
 
             try {
-
                 List<Book> books = bookService.findBookByAuthor(author);
-
                 createTableOfBooks(books);
 
             } catch (SQLException e) {
@@ -252,9 +252,7 @@ public class MenuController {
             String title = this.getInfo("Please enter the book title:");
 
             try {
-
                 List<Book> books = bookService.findBookByTitle(title);
-
                 createTableOfBooks(books);
 
             } catch (SQLException e) {
@@ -268,7 +266,6 @@ public class MenuController {
                 this.findBooksByTitle();
         }
     }
-
 
     public void findAllUsersBorrowedBooks() {
 
@@ -286,19 +283,12 @@ public class MenuController {
 
             sb.append("</tr>");
 
-            sb.append("<tr>");
-            sb.append("<td>").append("___").append("</td>");
-            sb.append("<td>").append("___").append("</td>");
-            sb.append("<td>").append("___").append("</td>");
-            sb.append("</tr>");
-
             for (var entry : booksBorrowed.entrySet()) {
                 sb.append("<tr>");
                 sb.append("<td>").append(entry.getKey().getUserName()).append("</td>");
                 sb.append("<td>").append(entry.getValue().size()).append("</td>");
                 for (Book b : entry.getValue()) {
                     sb.append("<td>").append(b).append("</td>");
-
                 }
             }
 
@@ -314,12 +304,12 @@ public class MenuController {
     }
 
     public void logout() {
-        Library3Application.setUser(null);
+        Library3Application.setCurrentUser(null);
     }
 
     public void seeMyBorrowedBooks() {
         try {
-            Set<Book> books = bookService.findBooksByUser(Library3Application.getCurrent().getId());
+            Set<Book> books = bookService.findBooksByUser(Library3Application.getCurrentUser().getId());
             if (!books.isEmpty()) {
                 String output;
                 StringBuilder sb = new StringBuilder();
@@ -331,18 +321,12 @@ public class MenuController {
 
                 sb.append("</tr>");
 
-                sb.append("<tr>");
-                sb.append("<td>").append("___").append("</td>");
-                sb.append("<td>").append("___").append("</td>");
-                sb.append("<td>").append("___").append("</td>");
-                sb.append("</tr>");
 
                 for (Book entry : books) {
                     sb.append("<tr>");
                     sb.append("<td>").append(entry.getBook_id()).append("</td>");
                     sb.append("<td>").append(entry.getAuthorName()).append("</td>");
                     sb.append("<td>").append(entry.getTitle()).append("</td>");
-
                 }
 
                 sb.append("</tr></table></html>");

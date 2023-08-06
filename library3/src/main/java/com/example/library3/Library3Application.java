@@ -7,26 +7,29 @@ import java.util.Scanner;
 
 
 public class Library3Application {
-    private static User current = null;
+    private static User currentUser = null;
 
     public static void main(String[] args) {
+        chooseMenu();
+    }
 
-        if (current == null) {
-            displayMenu1();
+    private static void chooseMenu() {
+        if (currentUser == null) {
+            displayMenuBeforeLogin();
         } else {
-            displayMenu2();
+            displayMenuAfterLogin();
         }
     }
 
-    public static User getCurrent() {
-        return current;
+    public static User getCurrentUser() {
+        return currentUser;
     }
 
-    public static void setCurrent(User current) {
-        Library3Application.current = current;
+    public static void setCurrentUser(User currentUser) {
+        Library3Application.currentUser = currentUser;
     }
 
-    public static void displayMenu1() {
+    public static void displayMenuBeforeLogin() {
         System.out.println("""
                 ---- The library ----
                  1. Register
@@ -34,26 +37,26 @@ public class Library3Application {
                           
                      """
         );
+
         Scanner scanner = new Scanner(System.in);
         String userChoice = scanner.nextLine();
 
         handleUserChoice(userChoice);
-
     }
 
-    public static void displayMenu2() {
+    public static void displayMenuAfterLogin() {
         System.out.println("""
                 ---- The library ----
                  3. Add book
-                 4. Remove book   
+                 4. Remove book
                  5. Borrow a book
                  6. Return a book
                  7. See all books in the library
                  8. Find books by author
                  9. Find books by title
                 10. Find book by author and title
-                11. Show my borrowed books        
-                12. See who borrowed books    
+                11. Show my borrowed books
+                12. See who borrowed books
                 13. Logout
                  
                      """
@@ -63,12 +66,6 @@ public class Library3Application {
         String userChoice = scanner.nextLine();
 
         handleUserChoice(userChoice);
-
-    }
-
-    public static void setUser(User user) {
-
-        current = user;
     }
 
     private static void handleUserChoice(String userChoice) {
@@ -91,10 +88,6 @@ public class Library3Application {
             default -> {
             }
         }
-        if (current == null) {
-            displayMenu1();
-        } else {
-            displayMenu2();
-        }
+        chooseMenu();
     }
 }

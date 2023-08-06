@@ -24,13 +24,13 @@ public class UserService {
         return message;
     }
 
-    public String loginUser(User user)  {
+    public String loginUser(User userDetails)  {
         String message;
         try {
-            User userObj = userRepository.findUserByNameAndPassword(user);
-            if(userObj != null) {
-            Library3Application.setCurrent(userRepository.findUserByNameAndPassword(user));
-                message = user.getUserName() +  " logged in successfully!";
+            User userFound = userRepository.findUserByNameAndPassword(userDetails);
+            if(userFound != null) {
+            Library3Application.setCurrentUser(userFound);
+                message = userDetails.getUserName() + " logged in successfully!";
              }
             else {
                 message = "Incorrect username or password. Please try again";
