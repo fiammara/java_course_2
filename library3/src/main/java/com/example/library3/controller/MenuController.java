@@ -142,7 +142,7 @@ public class MenuController {
             if (userService.checkUserBooks(user.getId()) > 4) {
                 System.out.println("You already have more than 4 books");
             } else {
-                System.out.println("You can borrow a book! Please write a book author or title: ");
+                System.out.println("You can borrow a book! Please write a book author and title: ");
                 try {
                     Book bookDetails = this.collectBookInfo1();
                     String result = bookService.borrowBook(bookDetails);

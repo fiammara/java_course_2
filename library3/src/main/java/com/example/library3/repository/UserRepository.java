@@ -40,6 +40,7 @@ public class UserRepository {
         preparedStatement.setString(2, user.getPassword());
 
         ResultSet rs = preparedStatement.executeQuery();
+
         if (rs.next()) {
 
             User user3 = new User();

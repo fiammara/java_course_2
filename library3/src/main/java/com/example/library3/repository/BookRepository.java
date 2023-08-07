@@ -19,7 +19,7 @@ public class BookRepository {
 
 
     public void saveBook(Book book) throws SQLException {
-        String query = "INSERT INTO books (authorName, title, copies, copiesAvailable) VALUES (?,?, ?,?)";
+        String query = "INSERT INTO books (authorName, title, copies, copiesAvailable) VALUES (?,?,?,?)";
 
         PreparedStatement preparedStatement = conn.prepareStatement(query);
         preparedStatement.setString(1, book.getAuthorName());
@@ -71,15 +71,15 @@ public class BookRepository {
 
     public boolean removeUsersBookById(Long bookId) throws SQLException {
         boolean result = false;
-        try (PreparedStatement preparedStatement = conn.prepareStatement(
-                "DELETE FROM usersbooks WHERE user_id = ? AND book_id = ?")
-        ) {
-            preparedStatement.setLong(1, Library3Application.getCurrentUser().getId());
-            preparedStatement.setLong(2, bookId);
-            if (preparedStatement.executeUpdate() > 0) {
-                result = true;
-            }
+        String query = "DELETE FROM usersbooks WHERE user_id = ? AND book_id = ?";
+        PreparedStatement preparedStatement = conn.prepareStatement(query);
+
+        preparedStatement.setLong(1, Library3Application.getCurrentUser().getId());
+        preparedStatement.setLong(2, bookId);
+        if (preparedStatement.executeUpdate() > 0) {
+            result = true;
         }
+
         return result;
     }
 
@@ -105,13 +105,11 @@ public class BookRepository {
 
         PreparedStatement preparedStatement = conn.prepareStatement(query);
         preparedStatement.setLong(1, id);
-
         ResultSet rs = preparedStatement.executeQuery();
 
         if (rs.next()) {
             result = rs.getInt(1);
         }
-
         return result;
     }
 
@@ -131,17 +129,12 @@ public class BookRepository {
 
     public boolean updateBookCopies(Long bookById, int quantityToAdd) throws SQLException {
         boolean result = false;
-        try (PreparedStatement preparedStatement = conn.prepareStatement(
-                "UPDATE books SET copiesAvailable = ? WHERE book_id = ?")
-        ) {
-            preparedStatement.setInt(1, (findBookById(bookById).getCopiesAvailable()) + quantityToAdd);
-            preparedStatement.setLong(2, bookById);
-            if (preparedStatement.executeUpdate() > 0) {
-                result = true;
-            }
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        String query = "UPDATE books SET copiesAvailable = ? WHERE book_id = ?";
+        PreparedStatement preparedStatement = conn.prepareStatement(query);
+        preparedStatement.setInt(1, (findBookById(bookById).getCopiesAvailable()) + quantityToAdd);
+        preparedStatement.setLong(2, bookById);
+        if (preparedStatement.executeUpdate() > 0) {
+            result = true;
         }
         return result;
     }
@@ -172,7 +165,7 @@ public class BookRepository {
         return book;
     }
 
-    private Book ExtractBookFromResultSet1(ResultSet rs) throws SQLException {
+    private Book extractBookFromResultSet1(ResultSet rs) throws SQLException {
         Book book = new Book();
         book.setBook_id(rs.getLong(1));
         book.setTitle(rs.getString(2));
@@ -181,15 +174,28 @@ public class BookRepository {
         return book;
     }
 
-    public List<Book> findBookByAuthor(String author) throws SQLException {
-        List<Book> books = new ArrayList<>();
-        String authorForQuery = "%"+author+"%";
-        String query = "SELECT * FROM books WHERE books.authorName LIKE ? ";
-        return getBooks(authorForQuery, books, query);
+    private User extractUserFromResultSet(ResultSet rs) throws SQLException {
+        User user = new User();
+        user.setId(rs.getLong(4));
+        user.setUserName(rs.getString(5));
+
+        return user;
     }
 
-    private List<Book> getBooks(String detail, List<Book> books, String query) throws SQLException {
+    public List<Book> findBookByAuthor(String author) throws SQLException {
 
+        String query = "SELECT * FROM books WHERE books.authorName LIKE ? ";
+        return getBooks("%" + author + "%", query);
+    }
+
+    public List<Book> findBookByTitle(String title) throws SQLException {
+
+        String query = "SELECT * FROM books WHERE books.title LIKE ? ";
+        return getBooks("%" + title + "%", query);
+    }
+
+    private List<Book> getBooks(String detail, String query) throws SQLException {
+        List<Book> books = new ArrayList<>();
         PreparedStatement preparedStatement = conn.prepareStatement(query);
         preparedStatement.setString(1, detail);
 
@@ -203,57 +209,43 @@ public class BookRepository {
         return books;
     }
 
-    public List<Book> findBookByTitle(String title) throws SQLException {
-        List<Book> books = new ArrayList<>();
-        String titleForQuery = "%"+title+"%";
-        String query = "SELECT * FROM books WHERE books.title LIKE ? ";
-
-        return getBooks(titleForQuery, books, query);
-    }
-
     public Map<User, Set<Book>> getBooksByTheirUsers() throws SQLException {
 
         String query = "SELECT books.book_id, books.title, books.authorName, users.user_id, users.userName FROM users " +
-                "INNER JOIN usersbooks ON users.user_id=usersbooks.user_id " +
-                "INNER JOIN books ON books.book_id=usersbooks.book_id";
+                "INNER JOIN usersbooks ON users.user_id = usersbooks.user_id " +
+                "INNER JOIN books ON books.book_id = usersbooks.book_id";
         PreparedStatement preparedStatement = conn.prepareStatement(query);
         ResultSet rs = preparedStatement.executeQuery();
 
-        if (!rs.next()) {
-            System.out.println("System error!");
-        }
-
-        User user = new User();
-        user.setId(rs.getLong(4));
-        user.setUserName(rs.getString(5));
-
-        Set<Book> SetOfBooks = new HashSet<>();
-        SetOfBooks.add(ExtractBookFromResultSet1(rs));
         Map<User, Set<Book>> usersBooks = new HashMap<>();
-        usersBooks.put(user, SetOfBooks);
 
-        while (rs.next()) {
+        if (rs.next()) {
+            User user = extractUserFromResultSet(rs);
+            Book book = extractBookFromResultSet1(rs);
 
-            Book book = ExtractBookFromResultSet1(rs);
+            Set<Book> SetOfBooks = new HashSet<>();
+            SetOfBooks.add(book);
 
-            for (User us : usersBooks.keySet()) {
-                Long userId = rs.getLong(4);
-                if (!Objects.equals(us.getId(), userId)) {
-                    User u = new User();
-                    u.setId(rs.getLong(4));
-                    u.setUserName(rs.getString(5));
-                    Set<Book> setOfBooks = new HashSet<>();
-                    setOfBooks.add(book);
-                    usersBooks.put(u, setOfBooks);
+            usersBooks.put(user, SetOfBooks);
+
+            while (rs.next()) {
+                User user1 = extractUserFromResultSet(rs);
+                Book book1 = extractBookFromResultSet1(rs);
+
+                if (usersBooks.containsKey(user1)) {
+                    usersBooks.get(user1).add(book1);
+                    usersBooks.put(user1, usersBooks.get(user1));
+
                 } else {
-                    Set<Book> usersBookSet = usersBooks.get(us);
-                    usersBookSet.add(book);
-                    usersBooks.put(us, usersBookSet);
+                    Set<Book> SetOfBooks1 = new HashSet<>();
+                    SetOfBooks1.add(book1);
+                    usersBooks.put(user1, SetOfBooks1);
                 }
             }
         }
-        return usersBooks;
-    }
+            return usersBooks;
+        }
+
 
     public Set<Book> getUsersBooks(Long userId) throws SQLException {
         Set<Book> setOfBooks = new HashSet<>();
@@ -266,9 +258,9 @@ public class BookRepository {
         ResultSet rs = preparedStatement.executeQuery();
 
         if (rs.next()) {
-            setOfBooks.add(ExtractBookFromResultSet1(rs));
+            setOfBooks.add(extractBookFromResultSet1(rs));
             while (rs.next()) {
-                setOfBooks.add(ExtractBookFromResultSet1(rs));
+                setOfBooks.add(extractBookFromResultSet1(rs));
             }
         }
         return setOfBooks;
